@@ -1,5 +1,5 @@
 <?php
-namespace Propel\Behavior\Store;
+namespace Propel\Generator\Behavior\Store;
 
 use Propel\Generator\Model\Behavior;
 
