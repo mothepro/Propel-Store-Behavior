@@ -1,0 +1,24 @@
+{
+    "name": "mothepro/store-behavior",
+    "description": "Adds a method for stroing data using LOAD DATA in MySQL",
+    "authors": [
+        {
+            "name": "Maurice Prosper",
+            "email": "maurice.prosper@ttu.edu"
+        }
+    ],
+	"type" : "propel-behavior",
+    "extra": {
+        "name": "store",
+        "class": "Mo\\Propel\\Behavior\\Store\\StoreBehavior"
+    },
+    "require": {
+        "php": ">=5.4",
+		"propel/propel": "~2.0@dev"
+	},
+	"autoload": {
+		"psr-0": {
+			"Mo\\Propel\\Behavior\\Store" : "src/"
+		}
+	}
+}
