@@ -26,61 +26,20 @@ class StoreBehavior extends Behavior {
 	}
 
 	protected function addStore() {
-		$col = $format = $args = array();
-		foreach($this->getTable()->getColumns() as $column) {
-			$col[ $column->getName() ] = $column->getPhpType();
+		// all columns
+		$args = array();
+		foreach($this->getTable()->getColumns() as $column)
 			$args[] = '$this->get'. $column->getPhpName() .'()';
-		}
-//		ksort($col);
 		
-		foreach($col as $name => $type)
-			switch ($type) {
-			case 'boolean':
-				$format[] = '%d';
-				break;
-
-			case 'integer':
-			case 'int':
-				$format[] = '%d';
-				break;
-
-			case 'double':
-				$format[] = '%f';
-				break;
-
-			case 'string':
-				$format[] = '"%s"';
-				break;
-
-			case 'NULL':
-				$format[] = '\\N';
-				break;
-
-			case 'object':
-			default:
-				// the object uses storable
-				if(class_exists($type) && in_array('Propel\Generator\Behavior\Store\Storable', class_implements($type))) {
-					
-					break;
-				} // fallthru
-						
-			case 'array':
-			case 'unknown type':
-			case 'resource':
-				throw new \Exception('Cannot log a '. $type .' into table '. $this->getTable()->getName());
-			}
-		//addcslashes(%s, '"') 
-		
-		
-		$x = [
+		// working file
+		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
+		$file .= $this->getTable()->getDatabase()->getName(); // db
+		$file .= '-' . $this->getTable()->getName(); // table
+	
+		return $this->renderTemplate('store', [
 			'table'		=> $this->getTable()->getName(),
-			'file'		=> $this->getAttribute('dir', sys_get_temp_dir()) . DIRECTORY_SEPARATOR . $this->getTable()->getDatabase()->getName() .'.'. $this->getTable()->getName(),
-			'format'	=> implode('\t', $format) . '\n',
+			'file'		=> $file,
 			'args'		=> $args,
-		];
-		
-		var_dump($x);
-		echo $this->renderTemplate('store', $x);
-		return $this->renderTemplate('store', $x);
+		]);
 	}
 }
