@@ -32,7 +32,7 @@ class StoreBehavior extends Behavior {
 			$args[] = '$this->get'. $column->getPhpName() .'()';
 		
 		// working file
-		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
+		$file  = $this->getAttribute('dir', sys_get_temp_dir() . DIRECTORY_SEPARATOR); // path
 		$file .= $this->getTable()->getDatabase()->getName(); // db
 		$file .= '-' . $this->getTable()->getName(); // table
 	

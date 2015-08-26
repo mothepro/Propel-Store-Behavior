@@ -13,9 +13,7 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 			$data[] = $x;
 		else
 			throw new \Exception('Cannot log a '. gettype ($arg) .' into table '. $table .' -> '. var_export($arg, true));
-	}
-		
-	var_dump($data);				
+	}				
 	
 	file_put_contents(
 		"<?php echo addslashes($file); ?>",
