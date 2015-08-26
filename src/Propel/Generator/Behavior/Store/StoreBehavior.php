@@ -32,7 +32,7 @@ class StoreBehavior extends Behavior {
 			$args[] = '$this->get'. $column->getPhpName() .'()';
 		
 		// working file
-		$file  = $this->getAttribute('dir', sys_get_temp_dir() . DIRECTORY_SEPARATOR); // path
+		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
 		$file .= $this->getTable()->getDatabase()->getName(); // db
 		$file .= '-' . $this->getTable()->getName(); // table
 	
@@ -42,4 +42,53 @@ class StoreBehavior extends Behavior {
 			'args'		=> $args,
 		]);
 	}
+	
+	/**
+	 * Escapes an argument to be stored in a file
+	 * @param mixed $arg
+	 * @return string|string[]|null
+	 */
+	protected static function escape($arg) {
+		switch (gettype($arg)) {
+			case 'boolean':
+				return ($arg ? 1 : 0);
+
+			case 'integer':
+			case 'int':
+				return intval($arg);
+
+			case 'double':
+			case 'float':
+				return floatval($arg);
+
+			case 'string':
+				return '"' . addcslashes($arg, '\\"') . '"';
+
+			case 'NULL':
+			case 'null':
+				return '\\N';
+
+			case 'array':
+				$ret = [];
+				foreach($arg as $k => $a)
+					$ret[ $k ] = static::escape ($a);
+				return $ret;
+			
+			case 'object':
+				// object can be escaped
+				if(method_exsits($arg, 'escape'))
+					return static::escape($arg->escape());
+
+				// object has key
+				elseif (method_exsits($arg, 'getPrimaryKey'))
+					return static::escape($arg->getPrimaryKey());
+
+			
+			case 'unknown type':
+			case 'resource':
+			default:
+				return null;
+		}
+	}
+
 }
