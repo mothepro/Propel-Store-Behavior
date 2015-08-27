@@ -7,7 +7,7 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 	
 	$data = array();
 	foreach([<?php echo implode(',', $args); ?>] as $v) {
-		$x = Propel\Generator\Behavior\Store\StoreBehavior::escape($v);
+		$x = \Propel\Generator\Behavior\Store\StoreBehavior::escape($v);
 		
 		switch(gettype($x)) {
 		case 'string':
@@ -20,7 +20,7 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 			break;
 			
 		default:
-			throw new \Exception('Cannot log a '. gettype ($arg) .' into table '. $table .' -> '. var_export($arg, true));
+			throw new \Exception(sprintf('Cannot log a %s into table "<?php echo $table ?>"', gettype($x)));
 		}
 	}
 		
@@ -33,6 +33,4 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 	);
 	
 	$this->postSave($con);
-	
-	return $this->getPrimaryKey();
 }
