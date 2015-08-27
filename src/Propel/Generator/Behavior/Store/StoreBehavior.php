@@ -48,7 +48,7 @@ class StoreBehavior extends Behavior {
 	 * @param mixed $arg
 	 * @return string|string[]|null
 	 */
-	protected static function escape($arg) {
+	public static function escape($arg) {
 		switch (gettype($arg)) {
 			case 'boolean':
 				return ($arg ? 1 : 0);
@@ -76,11 +76,11 @@ class StoreBehavior extends Behavior {
 			
 			case 'object':
 				// object can be escaped
-				if(method_exsits($arg, 'escape'))
+				if(is_subclass_of($arg, '\Propel\Generator\Behavior\Store\Storable'))
 					return static::escape($arg->escape());
 
 				// object has key
-				elseif (method_exsits($arg, 'getPrimaryKey'))
+				elseif (is_subclass_of($arg, '\Propel\Runtime\ActiveRecord\ActiveRecordInterface'))
 					return static::escape($arg->getPrimaryKey());
 
 			
@@ -90,5 +90,4 @@ class StoreBehavior extends Behavior {
 				return null;
 		}
 	}
-
 }
