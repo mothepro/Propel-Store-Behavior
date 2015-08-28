@@ -17,8 +17,8 @@
 		"propel/propel": "~2.0@dev"
 	},
 	"autoload": {
-		"psr-0": {
-			"Propel\\Generator\\Behavior\\Store" : "src/"
+		"psr-4": {
+			"Propel\\Generator\\Behavior\\Store\\" : "src/"
 		}
 	},
 	"bin": [
