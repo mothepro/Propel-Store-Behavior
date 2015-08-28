@@ -22,9 +22,7 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 		default:
 			throw new \Exception(sprintf('Cannot log a %s into table "<?php echo $table ?>"', gettype($x)));
 		}
-	}
-		
-	var_dump($data);				
+	}		
 	
 	file_put_contents(
 		"<?php echo addslashes($file); ?>",
