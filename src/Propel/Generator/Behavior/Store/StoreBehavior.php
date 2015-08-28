@@ -16,12 +16,31 @@ class StoreBehavior extends Behavior {
 	 * @var string[]
 	 */
 	protected $parameters = [
-		'dir'	=> null, // sys_get_temp_dir(),
+		'dir'		=> null,
+		'control'	=> null,
 	];
 	
+	/**
+	 * File we will be working with
+	 * @return string
+	 */
+	protected function getFile() {
+		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
+		$file .= $this->getTable()->getDatabase()->getName(); // db
+		$file .= '-' . $this->getTable()->getName(); // table
+		
+		return addcslashes($file, '" \\');
+	}
+
 	public function objectMethods() {
 		$script = '';
 		$script .= $this->addStore();
+		return $script;
+	}
+
+	public function staticMethods() {
+		$script = '';
+		$script .= $this->addLoad();
 		return $script;
 	}
 
@@ -31,15 +50,70 @@ class StoreBehavior extends Behavior {
 		foreach($this->getTable()->getColumns() as $column)
 			$args[] = '$this->get'. $column->getPhpName() .'()';
 		
-		// working file
-		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
-		$file .= $this->getTable()->getDatabase()->getName(); // db
-		$file .= '-' . $this->getTable()->getName(); // table
-	
 		return $this->renderTemplate('store', [
 			'table'		=> $this->getTable()->getName(),
-			'file'		=> $file,
+			'file'		=> $this->getFile(),
 			'args'		=> $args,
+		]);
+	}
+
+	protected function addLoad() {
+		// all columns
+		$cols = $expr = array();
+		foreach($this->getTable()->getColumns() as $column)
+			$cols[ $column->getName() ] = sprintf('`%s`', $column->getName());
+		
+		
+		// expressions
+		foreach($this->getParameters() as $name => $param) {
+			if(in_array($name, array_keys($this->getAttributes())))
+				continue;
+			
+			if(isset($cols[$name])) {
+				$varColName		= '@var_' . md5($name); // new sql variable
+				
+				$expr[] = sprintf('`%s` = %s',
+					$name, // column
+					str_replace('@', $varColName, $param) // expression
+				);
+				$cols[$name] = $varColName;
+			}
+		}
+		
+		// to string
+		$cols	= implode(', ', $cols);
+		$expr	= implode(', ', $expr);
+		
+		// for template
+		$file	= $this->getFile();
+		$table	= $this->getTable()->getName();
+		$sql	= sprintf(<<<'SQL'
+	LOAD DATA
+		LOW_PRIORITY
+		INFILE '%s'
+		%s
+		INTO TABLE %s
+		FIELDS
+			TERMINATED BY ''
+			ENCLOSED BY '"'
+			ESCAPED BY '\\'
+		LINES
+			STARTING BY ''
+			TERMINATED BY '\n'
+		IGNORE 0 LINES
+		(%s)
+		SET %s
+SQL
+	, $file
+	, $this->getAttribute('control', null)
+	, $table
+	, $cols
+	, $expr);
+		
+		return $this->renderTemplate('load', [
+			'table'		=> $table,
+			'file'		=> $file,
+			'sql'		=> $sql,
 		]);
 	}
 	

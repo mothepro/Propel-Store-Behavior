@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 require 'generated-conf/config.php'; // Propel's autoloader
 
 function fail($message) {
-	fwrite(STDERR, $message . PHP_EOL);
+	fwrite(STDERR, PHP_EOL . $message . PHP_EOL);
 	exit(1);
 }
 
@@ -17,15 +17,19 @@ $namespace = $opt['n'];
 $maps = is_array($opt['s']) ? $opt['s'] : array($opt['s']);
 
 foreach($maps as $map) {
-	$class = $namespace .'\\'. $map;
-	$classMap = $namespace .'\\Map\\'. $map . 'TableMap';
+	$class = $namespace .'\\Map\\'. $map . 'TableMap';
 	
 	if(!is_callable([$class, 'load']))
 		fail(sprintf('TableMap %s can not be loaded [-s %s]', $class, $map));
 	
 	try {
-		printf("Loading %s.\n", $map);
-		$class::load();
+		printf("Loading %s", $map);
+		$start = microtime(true);
+		
+		$con = \Propel\Runtime\Propel::getWriteConnection($class::DATABASE_NAME);
+		$class::load($con);
+		
+		printf("\t%ds.\n", (microtime(true) - $start) * 1000000);
 	} catch (\Exception $e) {
 		fail($e->getMessage());
 	}
