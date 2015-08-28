@@ -3,9 +3,9 @@
 require 'vendor/autoload.php';
 require 'generated-conf/config.php'; // Propel's autoloader
 
-function fail($message) {
+function fail($message, $status = 1) {
 	fwrite(STDERR, PHP_EOL . $message . PHP_EOL);
-	exit(1);
+	exit($status);
 }
 
 $opt = getopt('n:s:');
@@ -29,7 +29,7 @@ foreach($maps as $map) {
 		$con = \Propel\Runtime\Propel::getWriteConnection($class::DATABASE_NAME);
 		$class::load($con);
 		
-		printf("\t%ds.\n", (microtime(true) - $start) * 1000000);
+		printf("\t%.04fs.\n", (microtime(true) - $start) * 1000000);
 	} catch (\Exception $e) {
 		fail($e->getMessage());
 	}

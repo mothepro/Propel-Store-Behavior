@@ -63,20 +63,17 @@ class StoreBehavior extends Behavior {
 		foreach($this->getTable()->getColumns() as $column)
 			$cols[ $column->getName() ] = sprintf('`%s`', $column->getName());
 		
-		
 		// expressions
 		foreach($this->getParameters() as $name => $param) {
 			if(in_array($name, array_keys($this->getAttributes())))
 				continue;
 			
 			if(isset($cols[$name])) {
-				$varColName		= '@var_' . md5($name); // new sql variable
-				
-				$expr[] = sprintf('`%s` = %s',
+				$cols[$name]	= '@var_' . md5($name); // new sql variable
+				$expr[]			= sprintf('`%s` = %s',
 					$name, // column
-					str_replace('@', $varColName, $param) // expression
+					str_replace('@', $cols[$name], $param) // expression
 				);
-				$cols[$name] = $varColName;
 			}
 		}
 		
