@@ -25,7 +25,7 @@ class StoreBehavior extends Behavior {
 	 * @return string
 	 */
 	protected function getFile() {
-		$file  = rtrim($this->getAttribute('dir', sys_get_temp_dir()), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR; // path
+		$file  = $this->getAttribute('dir', rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR); // path
 		$file .= $this->getTable()->getDatabase()->getName(); // db
 		$file .= '-' . $this->getTable()->getName(); // table
 		
