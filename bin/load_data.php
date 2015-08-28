@@ -27,8 +27,7 @@ foreach($maps as $map) {
 		printf("Loading %s", $map);
 		$start = microtime(true);
 		
-		$con = \Propel\Runtime\Propel::getWriteConnection($class::DATABASE_NAME);
-		$class::load($con);
+		$class::load();
 		
 		printf("\t%.04fs.\n", (microtime(true) - $start) * 1000000);
 	} catch (\Exception $e) {
