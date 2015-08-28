@@ -29,7 +29,7 @@ foreach($maps as $map) {
 		
 		$class::load();
 		
-		printf("\t%.04fs.\n", (microtime(true) - $start) * 1000000);
+		printf("\t%.04fs.\n", microtime(true) - $start);
 	} catch (\Exception $e) {
 		fail($e->getMessage());
 	}

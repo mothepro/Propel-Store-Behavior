@@ -79,7 +79,10 @@ class StoreBehavior extends Behavior {
 		
 		// to string
 		$cols	= implode(', ', $cols);
-		$expr	= implode(', ', $expr);
+		if(!empty($expr))
+			$expr	= 'SET ' . implode(', ', $expr);
+		else
+			$expr = '';
 		
 		// for template
 		$file	= $this->getFile();
@@ -91,15 +94,15 @@ class StoreBehavior extends Behavior {
 		%s
 		INTO TABLE %s
 		FIELDS
-			TERMINATED BY ''
-			ENCLOSED BY '"'
-			ESCAPED BY '\\'
+			TERMINATED BY '\t'
+			OPTIONALLY ENCLOSED BY '"'
+			ESCAPED BY '\\\\'
 		LINES
 			STARTING BY ''
 			TERMINATED BY '\n'
 		IGNORE 0 LINES
 		(%s)
-		SET %s
+		%s
 SQL
 	, $file
 	, $this->getAttribute('control', null)
