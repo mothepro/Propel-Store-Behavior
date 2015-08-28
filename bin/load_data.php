@@ -1,17 +1,18 @@
 <?php
 
 require 'vendor/autoload.php';
-require 'generated-conf/config.php'; // Propel's autoloader
 
 function fail($message, $status = 1) {
 	fwrite(STDERR, PHP_EOL . $message . PHP_EOL);
 	exit($status);
 }
 
-$opt = getopt('n:s:');
+$opt = getopt('n:s:p:');
 
-if(!isset($opt['n']) && !isset($opt['s']))
+if(!isset($opt['n']) || !isset($opt['s']) || !isset($opt['p']))
 	fail('Missing reqiured option');
+
+require $opt['p'];
 
 $namespace = $opt['n'];
 $maps = is_array($opt['s']) ? $opt['s'] : array($opt['s']);
