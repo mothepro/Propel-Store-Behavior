@@ -65,9 +65,6 @@ class StoreBehavior extends Behavior {
 		
 		// expressions
 		foreach($this->getParameters() as $name => $param) {
-			if(in_array($name, array_keys($this->getAttributes())))
-				continue;
-			
 			if(isset($cols[$name])) {
 				$cols[$name]	= '@var_' . md5($name); // new sql variable
 				$expr[]			= sprintf('`%s` = %s',
@@ -78,11 +75,11 @@ class StoreBehavior extends Behavior {
 		}
 		
 		// to string
-		$cols	= implode(', ', $cols);
+		$exprStr = $colsStr = '';
+		
+		$colsStr	= implode(', ', $cols);
 		if(!empty($expr))
-			$expr	= 'SET ' . implode(', ', $expr);
-		else
-			$expr = '';
+			$exprStr	= 'SET ' . implode(', ', $expr);
 		
 		// for template
 		$file	= $this->getFile();
@@ -107,8 +104,8 @@ SQL
 	, $file
 	, $this->getAttribute('control', null)
 	, $table
-	, $cols
-	, $expr);
+	, $colsStr
+	, $exprStr);
 		
 		return $this->renderTemplate('load', [
 			'table'		=> $table,
