@@ -22,6 +22,7 @@
 		}
 	},
 	"bin": [
+		"bin/load_data",
 		"bin/load_data.php"
 	]
 }
