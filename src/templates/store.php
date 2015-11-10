@@ -11,6 +11,11 @@ public function store(\Propel\Runtime\Connection\PropelPDO $con = null) {
 		
 		switch(gettype($x)) {
 		case 'string':
+		case 'boolean':
+		case 'integer':
+		case 'int':
+		case 'double':
+		case 'float':
 			$data[] = $x;
 			break;
 		
