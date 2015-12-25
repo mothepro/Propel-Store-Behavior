@@ -10,7 +10,7 @@ function fail($message, $status = 1) {
 $opt = getopt('n:s:p:');
 
 if(!isset($opt['n']) || !isset($opt['s']) || !isset($opt['p']))
-	fail('Missing reqiured option');
+	fail('Missing required option');
 
 require $opt['p'];
 
